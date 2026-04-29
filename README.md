@@ -13,9 +13,9 @@ Você → SSH na VPS → docker exec no container → claude
 ```
 .
 ├── Dockerfile          # Node 22 slim + Claude Code
-├── docker-compose.yml  # Sobe o container com volume e env vars
+├── docker-compose.yml  # Sobe o container com volume e env vars (teste local)
 ├── claude-enter.sh     # Wrapper para entrar no container facilmente
-└── .env.example        # Variáveis necessárias
+└── .env.example        # Variáveis necessárias (teste local)
 ```
 
 ---
@@ -35,10 +35,11 @@ O jeito recomendado é via **GitHub App**:
 ## 2. Deploy no Coolify
 
 1. **New Resource → Dockerfile** — selecione este repositório
-2. Configure as **Environment Variables** (marque `ANTHROPIC_API_KEY` como secret):
+2. Em **Environment Variables**, adicione (marque como secret):
    - `ANTHROPIC_API_KEY` — sua chave da Anthropic
-   - `PROJECTS_PATH` — caminho dos seus projetos na VPS (ex: `/home/user/projects`)
-3. Configure o **Volume**: `$PROJECTS_PATH` → `/projects`
+3. Em **Persistent Storage**, adicione:
+   - **Source Path** (na VPS): caminho dos seus projetos, ex: `/home/user/projects`
+   - **Destination Path** (no container): `/projects`
 4. Sem necessidade de expor portas
 5. Deploy
 
@@ -83,7 +84,7 @@ claude
 Sem o wrapper, o comando equivalente é:
 
 ```bash
-docker exec -it claude-code bash
+docker exec -it $(docker ps --filter "label=app=claude-code" --format "{{.Names}}" | head -1) bash
 ```
 
 ---

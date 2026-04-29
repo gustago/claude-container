@@ -12,6 +12,8 @@ RUN useradd -m -s /bin/bash claude && \
     mkdir -p /projects && \
     chown claude:claude /projects
 
+LABEL app=claude-code
+
 USER claude
 WORKDIR /projects
 
