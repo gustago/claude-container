@@ -5,8 +5,12 @@ services:
     user: root                                                                                                          
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}                                                                          
-    volumes:                                                                                                          
+    volumes:
       - ${PROJECTS_PATH:-./projects}:/projects
+      - claude-home:/root/.claude
     restart: unless-stopped                                                                                             
     cap_drop:
-      - ALL  
+      - ALL
+
+volumes:
+  claude-home:
