@@ -1,11 +1,12 @@
 services:
-  claude-code:
-    build: .
+  claude-code:                                                                                                          
+    build: .                                                                                                          
     container_name: claude-code
+    user: root                                                                                                          
     environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    volumes:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}                                                                          
+    volumes:                                                                                                          
       - ${PROJECTS_PATH:-./projects}:/projects
-    restart: unless-stopped
+    restart: unless-stopped                                                                                             
     cap_drop:
-      - ALL
+      - ALL  
