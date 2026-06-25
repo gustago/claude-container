@@ -1,12 +1,16 @@
 services:
-  claude-code:                                                                                                          
-    build: .                                                                                                          
+  claude-code:
+    build:
+      context: .
+      args:
+        PROJECTS_PATH_CONTAINER: ${PROJECTS_PATH_CONTAINER}
     container_name: claude-code
-    user: root                                                                                                          
+    user: root
     environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}                                                                          
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - PROJECTS_PATH_CONTAINER=${PROJECTS_PATH_CONTAINER}
     volumes:
-      - ${PROJECTS_PATH:-./projects}:/projects
+      - ${PROJECTS_PATH_HOST}:${PROJECTS_PATH_CONTAINER}
       - claude-home:/root/.claude
     restart: unless-stopped                                                                                             
     cap_drop:

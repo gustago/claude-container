@@ -8,11 +8,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN npm install -g @anthropic-ai/claude-code                                                                            
 
-RUN useradd -m -s /bin/bash claude && \                                                                                 
-    mkdir -p /projects && \                                                                                           
-    chown claude:claude /projects
-                                                                                                                        
+ARG PROJECTS_PATH_CONTAINER
+
+RUN useradd -m -s /bin/bash claude && \
+    mkdir -p "${PROJECTS_PATH_CONTAINER}" && \
+    chown claude:claude "${PROJECTS_PATH_CONTAINER}"
+
 LABEL app=claude-code
-                                                                                                                        
-WORKDIR /projects                                                                                                     
+
+WORKDIR ${PROJECTS_PATH_CONTAINER}                                                                                                     
 CMD ["sleep", "infinity"]
