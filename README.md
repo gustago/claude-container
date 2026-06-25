@@ -35,13 +35,16 @@ O jeito recomendado é via **GitHub App**:
 ## 2. Deploy no Coolify
 
 1. **New Resource → Dockerfile** — selecione este repositório
-2. Em **Environment Variables**, adicione (marque como secret):
+2. Em **Environment Variables**, adicione (marque como secret quando aplicável):
    - `ANTHROPIC_API_KEY` — sua chave da Anthropic
-3. Em **Persistent Storage**, adicione:
-   - **Source Path** (na VPS): caminho dos seus projetos, ex: `/home/user/projects`
-   - **Destination Path** (no container): `/projects`
-4. Sem necessidade de expor portas
-5. Deploy
+   - `PROJECTS_PATH_CONTAINER` — caminho dos projetos dentro do container (mesmo valor do `.env.example`)
+3. Em **Build Arguments**, adicione:
+   - `PROJECTS_PATH_CONTAINER` — mesmo valor da env var acima (usado no `WORKDIR` da imagem)
+4. Em **Persistent Storage**, adicione:
+   - **Source Path** (na VPS): valor de `PROJECTS_PATH_HOST`
+   - **Destination Path** (no container): valor de `PROJECTS_PATH_CONTAINER`
+5. Sem necessidade de expor portas
+6. Deploy
 
 A cada `git push` no repositório o Coolify faz redeploy automaticamente via webhook.
 
@@ -56,12 +59,21 @@ sudo usermod -aG docker $USER
 # reconecte o SSH para o grupo ter efeito
 ```
 
+### Configurar variáveis na VPS
+
+```bash
+sudo cp .env.example /etc/claude-container.env
+sudo nano /etc/claude-container.env   # ajuste PROJECTS_PATH_* e ANTHROPIC_API_KEY
+```
+
 ### Instalar o wrapper de acesso
 
 ```bash
 sudo cp claude-enter.sh /usr/local/bin/claude-enter
 sudo chmod +x /usr/local/bin/claude-enter
 ```
+
+O `claude-enter` lê `/etc/claude-container.env` (ou `.env` ao lado do script no teste local).
 
 ---
 
@@ -71,7 +83,7 @@ sudo chmod +x /usr/local/bin/claude-enter
 # 1. SSH na VPS normalmente
 ssh user@sua-vps.com
 
-# 2. Entrar no container (vai direto para /projects)
+# 2. Entrar no container (vai direto para PROJECTS_PATH_CONTAINER)
 claude-enter
 
 # Ou entrar já em um subprojeto específico
@@ -84,7 +96,9 @@ claude
 Sem o wrapper, o comando equivalente é:
 
 ```bash
-docker exec -it $(docker ps --filter "label=app=claude-code" --format "{{.Names}}" | head -1) bash
+source /etc/claude-container.env
+docker exec -it -w "$PROJECTS_PATH_CONTAINER" \
+  $(docker ps --filter "label=app=claude-code" --format "{{.Names}}" | head -1) bash
 ```
 
 ---
