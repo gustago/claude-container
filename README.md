@@ -39,13 +39,11 @@ O jeito recomendado é via **GitHub App**:
    - `ANTHROPIC_API_KEY` — sua chave da Anthropic
    - `GEMINI_API_KEY` — chave do Google AI Studio (para `agy`; opcional se usar OAuth)
    - `PROJECTS_PATH_CONTAINER` — caminho dos projetos dentro do container (mesmo valor do `.env.example`)
-3. Em **Build Arguments**, adicione:
-   - `PROJECTS_PATH_CONTAINER` — mesmo valor da env var acima (usado no `WORKDIR` da imagem)
-4. Em **Persistent Storage**, adicione:
+3. Em **Persistent Storage**, adicione:
    - **Source Path** (na VPS): valor de `PROJECTS_PATH_HOST`
    - **Destination Path** (no container): valor de `PROJECTS_PATH_CONTAINER`
-5. Sem necessidade de expor portas
-6. Deploy
+4. Sem necessidade de expor portas
+5. Deploy
 
 A cada `git push` no repositório o Coolify faz redeploy automaticamente via webhook.
 

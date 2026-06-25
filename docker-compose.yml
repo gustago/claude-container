@@ -1,9 +1,6 @@
 services:
   claude-code:
-    build:
-      context: .
-      args:
-        PROJECTS_PATH_CONTAINER: ${PROJECTS_PATH_CONTAINER}
+    build: .
     container_name: claude-code
     user: root
     environment:
