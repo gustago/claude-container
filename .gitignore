@@ -1,0 +1,6 @@
+# Secrets e config local
+.env
+.env.local
+
+# Projetos montados no teste local (contém settings do Claude/Antigravity)
+projects/
