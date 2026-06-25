@@ -8,13 +8,16 @@ services:
     user: root
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - PROJECTS_PATH_CONTAINER=${PROJECTS_PATH_CONTAINER}
     volumes:
       - ${PROJECTS_PATH_HOST}:${PROJECTS_PATH_CONTAINER}
       - claude-home:/root/.claude
+      - antigravity-home:/root/.gemini
     restart: unless-stopped                                                                                             
     cap_drop:
       - ALL
 
 volumes:
   claude-home:
+  antigravity-home:

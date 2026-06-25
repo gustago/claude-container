@@ -1,18 +1,18 @@
 # claude-container
 
-Container para rodar o Claude Code em VPS com AlmaLinux (ou qualquer distro sem suporte nativo). Acesso via `docker exec` a partir da sessão SSH normal na VPS.
+Container para rodar **Claude Code** e **Antigravity CLI** (`agy`, sucessor do Gemini CLI) em VPS com AlmaLinux (ou qualquer distro sem suporte nativo). Acesso via `docker exec` a partir da sessão SSH normal na VPS.
 
 ## Fluxo de uso
 
 ```
-Você → SSH na VPS → docker exec no container → claude
+Você → SSH na VPS → docker exec no container → claude ou agy
 ```
 
 ## Estrutura
 
 ```
 .
-├── Dockerfile          # Node 22 slim + Claude Code
+├── Dockerfile          # Node 22 slim + Claude Code + Antigravity CLI
 ├── docker-compose.yml  # Sobe o container com volume e env vars (teste local)
 ├── claude-enter.sh     # Wrapper para entrar no container facilmente
 └── .env.example        # Variáveis necessárias (teste local)
@@ -37,6 +37,7 @@ O jeito recomendado é via **GitHub App**:
 1. **New Resource → Dockerfile** — selecione este repositório
 2. Em **Environment Variables**, adicione (marque como secret quando aplicável):
    - `ANTHROPIC_API_KEY` — sua chave da Anthropic
+   - `GEMINI_API_KEY` — chave do Google AI Studio (para `agy`; opcional se usar OAuth)
    - `PROJECTS_PATH_CONTAINER` — caminho dos projetos dentro do container (mesmo valor do `.env.example`)
 3. Em **Build Arguments**, adicione:
    - `PROJECTS_PATH_CONTAINER` — mesmo valor da env var acima (usado no `WORKDIR` da imagem)
@@ -63,7 +64,7 @@ sudo usermod -aG docker $USER
 
 ```bash
 sudo cp .env.example /etc/claude-container.env
-sudo nano /etc/claude-container.env   # ajuste PROJECTS_PATH_* e ANTHROPIC_API_KEY
+sudo nano /etc/claude-container.env   # ajuste PROJECTS_PATH_*, ANTHROPIC_API_KEY e GEMINI_API_KEY
 ```
 
 ### Instalar o wrapper de acesso
@@ -89,8 +90,12 @@ claude-enter
 # Ou entrar já em um subprojeto específico
 claude-enter meu-projeto
 
-# 3. Dentro do container, usar o Claude Code normalmente
-claude
+# 3. Dentro do container, usar as CLIs normalmente
+claude          # Claude Code (Anthropic)
+agy             # Antigravity CLI (Gemini — sucessor do gemini-cli)
+
+# Primeira execução do agy: wizard de tema e autenticação (OAuth no browser,
+# ou URL + código em sessão SSH). Com GEMINI_API_KEY no .env, pula o OAuth.
 ```
 
 Sem o wrapper, o comando equivalente é:
@@ -119,4 +124,5 @@ docker compose up --build -d
 - Sem SSH server no container — acesso apenas via `docker exec` (requer acesso à VPS)
 - Usuário não-root (`claude`) dentro do container
 - `cap_drop: ALL` — zero capacidades extras
-- `ANTHROPIC_API_KEY` apenas em runtime via env var, nunca na imagem
+- `ANTHROPIC_API_KEY` e `GEMINI_API_KEY` apenas em runtime via env var, nunca na imagem
+- Estado do Antigravity CLI persistido em volume (`/root/.gemini`)
